@@ -1,0 +1,6 @@
+numpy
+pandas
+PyYAML
+requests
+SQLAlchemy
+psycopg2-binary
