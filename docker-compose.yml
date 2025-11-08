@@ -1,9 +1,19 @@
-version: '3.8'
+version: '3.9'
 
 services:
-  postgres:
+  main:
+    build: .
+    container_name: main
+    volumes:
+      - ./app/src:/app/src
+      - ./app/data:/app/data
+    restart: "on-failure"
+    depends_on:
+      - pgdatabase
+
+  pgdatabase:
     image: my_postgres_image
-    container_name: pg_container
+    container_name: pgdatabase
     restart: always
     environment:
       POSTGRES_USER: myuser
@@ -16,11 +26,15 @@ services:
 
   pgadmin:
     image: dpage/pgadmin4
+    container_name: pgadmin
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@example.com
       PGADMIN_DEFAULT_PASSWORD: admin
     ports:
       - "5050:80"
+    depends_on:
+      - pgdatabase
+    restart: on-failure
 
 volumes:
   pg_data:
