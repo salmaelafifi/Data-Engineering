@@ -4,7 +4,7 @@ import os
 # from db_utils import save_to_db
 import DataPipline as dp
 
-def renameColumns(df, column_name, columns_mapping):
+def rename_columns(df, column_name, columns_mapping):
     """
     Rename columns of the DataFrame based on the provided mapping.
 
@@ -58,7 +58,7 @@ def total_trade_amount(D1):
     Returns:
     pd.DataFrame: DataFrame with an additional 'total_trade_amount' column.
     """
-    D1['total_trade_amount'] = D1['trade_quantity'] * D1['stock_price']
+    D1['total_trade_amount'] = D1['quantity'] * D1['stock_price']
     return D1
 
 def return_wanted_columns(df, wanted_columns):
@@ -74,26 +74,26 @@ def return_wanted_columns(df, wanted_columns):
     """
     return df[wanted_columns]
 
-if __name__ == '__main__':
-    stocks_clean = dp.extract_data('C:/Users/nouna/OneDrive/Documents/GitHub/Data-Engineering/app/data/stocks_clean.csv')
-    dim_customers_clean = dp.extract_data('C:/Users/nouna/OneDrive/Documents/GitHub/Data-Engineering/app/data/dim_customer_clean.csv')
-    dim_date = dp.extract_data('C:/Users/nouna/OneDrive/Documents/GitHub/Data-Engineering/app/data/dim_date.csv')
-    trades_clean = dp.extract_data('C:/Users/nouna/OneDrive/Documents/GitHub/Data-Engineering/app/data/trades_clean.csv')
-    dim_stock = dp.extract_data('C:/Users/nouna/OneDrive/Documents/GitHub/Data-Engineering/app/data/dim_stock.csv')
+# if __name__ == '__main__':
+#     stocks_clean = dp.extract_data('C:/Users/nouna/OneDrive/Documents/GitHub/Data-Engineering/app/data/stocks_clean.csv')
+#     dim_customers_clean = dp.extract_data('C:/Users/nouna/OneDrive/Documents/GitHub/Data-Engineering/app/data/dim_customer_clean.csv')
+#     dim_date = dp.extract_data('C:/Users/nouna/OneDrive/Documents/GitHub/Data-Engineering/app/data/dim_date.csv')
+#     trades_clean = dp.extract_data('C:/Users/nouna/OneDrive/Documents/GitHub/Data-Engineering/app/data/trades_clean.csv')
+#     dim_stock = dp.extract_data('C:/Users/nouna/OneDrive/Documents/GitHub/Data-Engineering/app/data/dim_stock.csv')
 
-    D1 = merge_dataframes(trades_clean, dim_stock, on_columns='stock_ticker')
-    dim_customers_clean = renameColumns(dim_customers_clean, 'account_type', 'customer_account_type')
-    D1 = merge_dataframes(D1, dim_customers_clean, on_columns='customer_id')
-    dim_date = renameColumns(dim_date, 'date', 'timestamp')
-    D1 = merge_dataframes(D1, dim_date, on_columns=['timestamp'])
-    stocks_clean = renameColumns(stocks_clean, 'date', 'timestamp')
-    stocks_clean_long = melt_dataframe(stocks_clean, id_vars=['timestamp'], value_vars='timestamp', var_name='stock_ticker', value_name='stock_price')
-    D1 = merge_dataframes(D1, stocks_clean_long, on_columns=['timestamp', 'stock_ticker'])
-    D1 = renameColumns(D1,'liquidity_tier', 'stock_liquidity_tier')
-    D1 = renameColumns(D1,'sector', 'stock_sector')
-    D1 = renameColumns(D1,'industry', 'stock_industry')
-    D1 = total_trade_amount(D1)
-    wanted_columns = return_wanted_columns(['timestamp', 'customer_id', 'stock_ticker', 'transaction_type' , 'quantity' , 'average_trade_size', 'stock_price', 'total_trade_amount', 'customer_account_type', 'day_name','is_weekend', 'is_holiday', 'stock_liquidity_tier', 'stock_sector', 'stock_industry'])
+#     D1 = merge_dataframes(trades_clean, dim_stock, on_columns='stock_ticker')
+#     dim_customers_clean = renameColumns(dim_customers_clean, 'account_type', 'customer_account_type')
+#     D1 = merge_dataframes(D1, dim_customers_clean, on_columns='customer_id')
+#     dim_date = renameColumns(dim_date, 'date', 'timestamp')
+#     D1 = merge_dataframes(D1, dim_date, on_columns=['timestamp'])
+#     stocks_clean = renameColumns(stocks_clean, 'date', 'timestamp')
+#     stocks_clean_long = melt_dataframe(stocks_clean, id_vars=['timestamp'], value_vars='timestamp', var_name='stock_ticker', value_name='stock_price')
+#     D1 = merge_dataframes(D1, stocks_clean_long, on_columns=['timestamp', 'stock_ticker'])
+#     D1 = renameColumns(D1,'liquidity_tier', 'stock_liquidity_tier')
+#     D1 = renameColumns(D1,'sector', 'stock_sector')
+#     D1 = renameColumns(D1,'industry', 'stock_industry')
+#     D1 = total_trade_amount(D1)
+#     wanted_columns = return_wanted_columns(['timestamp', 'customer_id', 'stock_ticker', 'transaction_type' , 'quantity' , 'average_trade_size', 'stock_price', 'total_trade_amount', 'customer_account_type', 'day_name','is_weekend', 'is_holiday', 'stock_liquidity_tier', 'stock_sector', 'stock_industry'])
 
 
     
