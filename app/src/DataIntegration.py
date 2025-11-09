@@ -3,8 +3,9 @@ import numpy as np
 import os
 # from db_utils import save_to_db
 import DataPipline as dp
+from Utils import save_csv
 
-def renameColumns(df, column_name, columns_mapping):
+def rename_columns(df, column_name, columns_mapping):
     """
     Rename columns of the DataFrame based on the provided mapping.
 
@@ -82,22 +83,27 @@ if __name__ == '__main__':
     dim_stock = dp.extract_data('C:/Users/nouna/OneDrive/Documents/GitHub/Data-Engineering/app/data/dim_stock.csv')
 
     D1 = merge_dataframes(trades_clean, dim_stock, on_columns='stock_ticker')
-    renameColumns(dim_customers_clean, 'account_type', 'customer_account_type')
-
+    rename_columns(dim_customers_clean, 'account_type', 'customer_account_type')
     D1 = merge_dataframes(D1, dim_customers_clean, on_columns='customer_id')
-    renameColumns(dim_date, 'date', 'timestamp')
-
+    rename_columns(dim_date, 'date', 'timestamp')
     D1 = merge_dataframes(D1, dim_date, on_columns=['timestamp'])
-    renameColumns(stocks_clean, 'date', 'timestamp')
-    stocks_clean_long = melt_dataframe(stocks_clean, id_vars=['timestamp'], value_vars='timestamp', var_name='stock_ticker', value_name='stock_price')
+    rename_columns(stocks_clean, 'date', 'timestamp')
+    stocks_clean_long = melt_dataframe(
+    stocks_clean,
+    id_vars=['timestamp'],
+    value_vars=[col for col in stocks_clean.columns if col != 'timestamp'],  # all stock columns
+    var_name='stock_ticker',
+    value_name='stock_price'
+    )
+    save_csv(stocks_clean_long, "melted_data_set.csv")
     D1 = merge_dataframes(D1, stocks_clean_long, on_columns=['timestamp', 'stock_ticker'])
-    renameColumns(D1,'liquidity_tier', 'stock_liquidity_tier')
-    renameColumns(D1,'sector', 'stock_sector')
-    renameColumns(D1,'industry', 'stock_industry')
+    D1.head()
+    rename_columns(D1,'liquidity_tier', 'stock_liquidity_tier')
+    rename_columns(D1,'sector', 'stock_sector')
+    rename_columns(D1,'industry', 'stock_industry')
     D1 = total_trade_amount(D1)
-    wanted_columns = return_wanted_columns(D1,['timestamp', 'customer_id', 'stock_ticker', 'transaction_type' , 'quantity' , 'average_trade_size', 'stock_price', 'total_trade_amount', 'customer_account_type', 'day_name','is_weekend', 'is_holiday', 'stock_liquidity_tier', 'stock_sector', 'stock_industry'])
+    wanted_columns = return_wanted_columns(D1, ['timestamp', 'customer_id', 'stock_ticker', 'transaction_type' , 'quantity' , 'average_trade_size', 'stock_price', 'total_trade_amount', 'customer_account_type', 'day_name','is_weekend', 'is_holiday', 'stock_liquidity_tier', 'stock_sector', 'stock_industry'])
 
 
-    
-    # save_to_db(wanted_columns, 'cleaned_vg_sales')
+    save_csv(wanted_columns, "integrated_data_set.csv")
 
