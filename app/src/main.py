@@ -27,3 +27,8 @@ if __name__ == '__main__':
 
     save_csv(df_cleaned_trades, "final_trades.csv")
 
+    df_customers = extract_data("/Users/salmaelafifi/Documents/GitHub/Data-Engineering/app/data/dim_customer.csv")
+
+    df_dropped_customer = drop_column(df_customers, "customer_key")
+
+    save_csv(df_dropped_customer, "final_customer.csv")

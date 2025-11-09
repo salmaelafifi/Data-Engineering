@@ -93,3 +93,21 @@ def handle_outliers(df, col, multiplier=1.5):
 
     return df_copy
 
+def drop_column(df: pd.DataFrame, column_name: str) -> pd.DataFrame:
+    """
+    Drops a column from the DataFrame if it exists.
+
+    Args:
+        df (pd.DataFrame): The input DataFrame.
+        column_name (str): Name of the column to drop.
+
+    Returns:
+        pd.DataFrame: A new DataFrame with the column removed.
+    """
+    df_copy = df.copy()
+    if column_name in df_copy.columns:
+        df_copy.drop(column_name, axis=1, inplace=True)
+        print(f"Column '{column_name}' dropped.")
+    else:
+        print(f"Column '{column_name}' does not exist in DataFrame.")
+    return df_copy
