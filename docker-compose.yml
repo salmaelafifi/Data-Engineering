@@ -7,12 +7,14 @@ services:
     volumes:
       - ./app/src:/app/src
       - ./app/data:/app/data
+      - ./app/clean_data_set:/app/clean_data_set
     restart: "on-failure"
     depends_on:
-      - pgdatabase
+      pgdatabase:
+        condition: service_healthy
 
   pgdatabase:
-    image: my_postgres_image
+    image: postgres:15
     container_name: pgdatabase
     restart: always
     environment:
@@ -23,6 +25,11 @@ services:
       - "5432:5432"
     volumes:
       - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U myuser"]
+      interval: 5s
+      retries: 5
+      timeout: 5s
 
   pgadmin:
     image: dpage/pgadmin4
