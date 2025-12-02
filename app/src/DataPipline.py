@@ -8,22 +8,6 @@ def extract_data(data_path):
 
 
 def impute_missing_data(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Imputes missing stock price data using linear interpolation.
-    
-    Steps:
-      1. Detects the date column automatically (case-insensitive).
-      2. Converts the date column to datetime format.
-      3. Applies linear interpolation to fill missing values.
-      4. Prints summary of imputed values per stock.
-    
-    Args:
-        df (pd.DataFrame): The original dataframe containing stock prices.
-        
-    Returns:
-        pd.DataFrame: A copy of the dataframe with missing values imputed.
-    """
-    
     df_copy = df.copy()
 
     print("\nMissing values before linear interpolation:")
@@ -53,9 +37,6 @@ def impute_missing_data(df: pd.DataFrame) -> pd.DataFrame:
     return df_imputed
 
 def check_outliers(df, col) -> bool:
-  '''
-  Returns true of outliers more than 10%
-  '''
   Q1 = df[col].quantile(0.25)
   Q3 = df[col].quantile(0.75)
   IQR = Q3 - Q1
@@ -63,17 +44,6 @@ def check_outliers(df, col) -> bool:
   return (len(outliers)/len(df)) *100 > 10
 
 def handle_outliers(df, col, multiplier=1.5):
-    """
-    Caps outliers in a specific column using the IQR method.
-
-    Args:
-        df (pd.DataFrame): Input dataframe.
-        col (str): Column name to cap outliers in.
-        multiplier (float): IQR multiplier (default = 1.5).
-
-    Returns:
-        pd.DataFrame: Copy of the dataframe with outliers capped for the given column.
-    """
     df_copy = df.copy()
 
     
@@ -94,16 +64,6 @@ def handle_outliers(df, col, multiplier=1.5):
     return df_copy
 
 def drop_column(df: pd.DataFrame, column_name: str) -> pd.DataFrame:
-    """
-    Drops a column from the DataFrame if it exists.
-
-    Args:
-        df (pd.DataFrame): The input DataFrame.
-        column_name (str): Name of the column to drop.
-
-    Returns:
-        pd.DataFrame: A new DataFrame with the column removed.
-    """
     df_copy = df.copy()
     if column_name in df_copy.columns:
         df_copy.drop(column_name, axis=1, inplace=True)
