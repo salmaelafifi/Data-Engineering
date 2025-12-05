@@ -7,9 +7,6 @@ def encode_data(final_df: pd.DataFrame):
     df = final_df.copy()
     global_lookup = {}
 
-    # =====================================================
-    # 1. LABEL ENCODING → stock_ticker (ADD column, keep original)
-    # =====================================================
     if 'stock_ticker' in df.columns:
         le = LabelEncoder()
         df['stock_ticker_encoded'] = le.fit_transform(df['stock_ticker'].astype(str))
@@ -23,9 +20,7 @@ def encode_data(final_df: pd.DataFrame):
         global_lookup['stock_ticker'] = lookup_df
         save_lookup_csv(lookup_df, 'lookup_stock_ticker.csv')
 
-    # =====================================================
-    # 2. ONE-HOT (k-1) → ADD COLUMNS, KEEP ORIGINAL
-    # =====================================================
+ 
     one_hot_cols = [
         'transaction_type',
         'stock_sector',
@@ -39,14 +34,14 @@ def encode_data(final_df: pd.DataFrame):
 
         original_values = df[col].astype(str)
 
-        # ✅ FORCE 0/1 INSTEAD OF TRUE/FALSE
+        
         dummies = pd.get_dummies(
             original_values,
             prefix=f"{col}_enc",
             drop_first=True
         ).astype(int)
 
-        # ✅ ADD encoded columns (do NOT drop original)
+        
         df = pd.concat([df, dummies], axis=1)
 
         lookup_rows = []
@@ -56,7 +51,7 @@ def encode_data(final_df: pd.DataFrame):
         }
         all_categories = set(original_values.unique())
 
-        # ✅ Explicitly encoded categories
+        
         for dummy_col in dummies.columns:
             original_val = dummy_col.replace(f"{col}_enc_", "")
             lookup_rows.append({
@@ -65,7 +60,7 @@ def encode_data(final_df: pd.DataFrame):
                 'encoded_value': dummy_col
             })
 
-        # ✅ Dropped baseline category → represented by ALL ZEROS
+        
         dropped_category = list(all_categories - encoded_categories)
         if dropped_category:
             lookup_rows.append({
@@ -76,12 +71,9 @@ def encode_data(final_df: pd.DataFrame):
 
         lookup_df = pd.DataFrame(lookup_rows)
         global_lookup[col] = lookup_df
-        # lookup_df.to_csv(f'lookup_{col}.csv', index=False)
         save_lookup_csv(lookup_df, f'lookup_{col}.csv')
 
-    # =====================================================
-    # 3. BINARY → ADD encoded columns, KEEP ORIGINAL
-    # =====================================================
+  
     binary_cols = ['is_weekend', 'is_holiday']
 
     for col in binary_cols:
@@ -98,14 +90,12 @@ def encode_data(final_df: pd.DataFrame):
             global_lookup[col] = lookup_df
             save_lookup_csv(lookup_df, f'lookup_{col}.csv')
 
-    # =====================================================
-    # ✅ FINAL OUTPUT
-    # =====================================================
+
     save_csv(df, "/app/final_data_set/FULL_STOCKS.csv")
     with open("encoded_schema.json", "w") as f:
       json.dump(list(df.columns), f)
 
-    # return df, global_lookup
+
 
 
 def transform_stream_batch(stream_df: pd.DataFrame,
@@ -117,15 +107,11 @@ def transform_stream_batch(stream_df: pd.DataFrame,
     and appends it safely to the same FINAL_STOCKS.csv.
     """
 
-    # ============================
-    # 1. LOAD FROZEN SCHEMA
-    # ============================
+
     with open(schema_path, "r") as f:
         encoded_columns = json.load(f)
 
-    # ============================
-    # 2. LOAD LOOKUP TABLES
-    # ============================
+ 
     lookup_tables = {}
 
     lookup_files = {
@@ -146,9 +132,6 @@ def transform_stream_batch(stream_df: pd.DataFrame,
 
     encoded_rows = []
 
-    # ============================
-    # 3. ENCODE EACH STREAM ROW
-    # ============================
     for _, row in stream_df.iterrows():
         encoded_row = row.copy()
 
@@ -187,14 +170,10 @@ def transform_stream_batch(stream_df: pd.DataFrame,
 
     encoded_stream_df = pd.DataFrame(encoded_rows)
 
-    # ============================
-    # 4. ENFORCE FROZEN SCHEMA
-    # ============================
+ 
     encoded_stream_df = encoded_stream_df.reindex(columns=encoded_columns, fill_value=0)
 
-    # ============================
-    # 5. APPEND TO SAME FINAL CSV
-    # ============================
+   
     encoded_stream_df.to_csv(
         final_csv_path,
         mode="a",
@@ -202,4 +181,4 @@ def transform_stream_batch(stream_df: pd.DataFrame,
         index=False
     )
 
-    # return encoded_stream_df
+    

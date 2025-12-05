@@ -92,7 +92,7 @@ services:
       - "7077:7077"
     volumes:
       - ./app/final_data_set:/app/final_data_set
-       - ./app/src:/app/src
+      - ./app/src:/app/src
     environment:
       - SPARK_NO_DAEMONIZE=true
       - SPARK_LOG_DIR=/tmp/spark-logs
@@ -115,7 +115,7 @@ services:
       - "8081:8081"
     volumes:
       - ./app/final_data_set:/app/final_data_set
-       - ./app/src:/app/src
+      - ./app/src:/app/src
     environment:
       - SPARK_NO_DAEMONIZE=true
       - SPARK_LOG_DIR=/tmp/spark-logs
