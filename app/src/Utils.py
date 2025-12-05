@@ -57,7 +57,7 @@ def save_to_db(cleaned, table_name):
     else:
         print('Failed to connect to Database')
 
-def save_lookup_csv(df: pd.DataFrame, filename: str, directory: str = "app/lookup_tables") -> str:
+def save_lookup_csv(df: pd.DataFrame, filename: str, directory: str = "/app/lookup_tables") -> str:
     os.makedirs(directory, exist_ok=True)
 
     filepath = os.path.join(directory, filename)

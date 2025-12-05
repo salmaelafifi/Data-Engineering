@@ -1,6 +1,10 @@
 from DataPipline import *
 from DataIntegration import *
 from Utils import *
+from PrepareStream import *
+from KafkaConsumer import *
+from SparkProcessing import *
+from DataEncoding import *
 
 if __name__ == '__main__':
     df_stock_prices=extract_data('/app/data/daily_trade_prices.csv')
@@ -58,3 +62,12 @@ D1 = total_trade_amount(D1)
 final_data_set = return_wanted_columns(D1, ['timestamp', 'customer_id', 'stock_ticker', 'transaction_type' , 'quantity' , 'average_trade_size', 'stock_price', 'total_trade_amount', 'customer_account_type', 'day_name','is_weekend', 'is_holiday', 'stock_liquidity_tier', 'stock_sector', 'stock_industry'])
 
 save_to_db(final_data_set, "stock_trades_data_set")
+
+# ____________Milestone 2______________
+
+prepare_stream()
+remaining_95= extract_data("/app/streaming_data/remaining_95.csv")
+encode_data(remaining_95)
+
+consumer_stream()
+spark_anaylsis()

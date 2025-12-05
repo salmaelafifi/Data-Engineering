@@ -101,17 +101,17 @@ def encode_data(final_df: pd.DataFrame):
     # =====================================================
     # ✅ FINAL OUTPUT
     # =====================================================
-    save_csv(df, "FINAL_STOCKS.csv")
+    save_csv(df, "/app/final_data_set/FULL_STOCKS.csv")
     with open("encoded_schema.json", "w") as f:
       json.dump(list(df.columns), f)
 
-    return df, global_lookup
+    # return df, global_lookup
 
 
 def transform_stream_batch(stream_df: pd.DataFrame,
-                           lookup_folder: str = ".",
-                           final_csv_path: str = "FINAL_STOCKS.csv",
-                           schema_path: str = "encoded_schema.json"):
+                           lookup_folder: str = "/app/lookup_tables",
+                           final_csv_path: str = "/app/final_data_set/FULL_STOCKS.csv",
+                           schema_path: str = "/app/encoded_schema.json"):
     """
     Transforms a streamed micro-batch using precomputed lookup tables
     and appends it safely to the same FINAL_STOCKS.csv.
@@ -202,4 +202,4 @@ def transform_stream_batch(stream_df: pd.DataFrame,
         index=False
     )
 
-    return encoded_stream_df
+    # return encoded_stream_df
