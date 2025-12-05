@@ -18,16 +18,16 @@ def spark_anaylsis():
     print("\n====== Spark FUNCTIONS ======\n")
 
     print("1. Total trading volume for each stock ticker: ")
-    q1 = df.groupBy("ticker").agg(F.sum("quantity").alias("total_volume"))
+    q1 = df.groupBy("stock_ticker").agg(F.sum("quantity").alias("total_volume"))
     q1.show()
 
     print("2. Average stock price by sector: ")
-    q2 = df.groupBy("sector").agg(F.avg("price").alias("avg_price"))
+    q2 = df.groupBy("stock_sector").agg(F.avg("stock_price").alias("avg_price"))
     q2.show()
 
     print("3. Buy vs sell transactions on weekends: ")
-    q3 = df.filter(F.col("day_of_week").isin("Saturday", "Sunday")) \
-        .groupBy("trade_type").count()
+    q3 = df.filter(F.col("day_name").isin("Saturday", "Sunday")) \
+        .groupBy("transaction_type").count()
     q3.show()
 
     print("4. Customers with more than 10 transactions: ")
@@ -35,7 +35,7 @@ def spark_anaylsis():
     q4.show()
 
     print("5. Total trade amount per day of week, ordered highest to lowest: ")
-    q5 = df.groupBy("day_of_week").agg(F.sum("trade_amount").alias("total_amount")) \
+    q5 = df.groupBy("day_name").agg(F.sum("total_trade_amount").alias("total_amount")) \
         .orderBy(F.desc("total_amount"))
     q5.show()
 
@@ -46,18 +46,18 @@ def spark_anaylsis():
 
     print("1. Top 5 most traded tickers by total quantity: ")
     spark.sql("""
-        SELECT ticker, SUM(quantity) AS total_quantity
+        SELECT stock_ticker, SUM(quantity) AS total_quantity
         FROM stocks
-        GROUP BY ticker
+        GROUP BY stock_ticker
         ORDER BY total_quantity DESC
         LIMIT 5
     """).show()
 
     print("2. Average trade amount by customer account type: ")
     spark.sql("""
-        SELECT account_type, AVG(trade_amount) AS avg_trade_amount
+        SELECT customer_account_type, AVG(total_trade_amount) AS avg_trade_amount
         FROM stocks
-        GROUP BY account_type
+        GROUP BY customer_account_type
     """).show()
 
     print("3. Transactions during holidays vs non-holidays: ")
@@ -69,19 +69,19 @@ def spark_anaylsis():
 
     print("4. Sectors with highest total trading volume on weekends: ")
     spark.sql("""
-        SELECT sector, SUM(quantity) AS weekend_volume
+        SELECT stock_sector, SUM(quantity) AS weekend_volume
         FROM stocks
-        WHERE day_of_week IN ('Saturday', 'Sunday')
-        GROUP BY sector
+        WHERE day_name IN ('Saturday', 'Sunday')
+        GROUP BY stock_sector
         ORDER BY weekend_volume DESC
     """).show()
 
     print("5. Total buy vs sell amount for each liquidity tier: ")
     spark.sql("""
-        SELECT liquidity_tier, trade_type, SUM(trade_amount) AS total_amount
+        SELECT stock_liquidity_tier, transaction_type, SUM(total_trade_amount) AS total_amount
         FROM stocks
-        GROUP BY liquidity_tier, trade_type
-        ORDER BY liquidity_tier ASC, trade_type ASC
+        GROUP BY stock_liquidity_tier, transaction_type
+        ORDER BY stock_liquidity_tier ASC, transaction_type ASC
     """).show()
 
     spark.stop()

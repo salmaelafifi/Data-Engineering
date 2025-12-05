@@ -93,6 +93,7 @@ services:
     volumes:
       - ./app/final_data_set:/app/final_data_set
       - ./app/src:/app/src
+      - ./app:/home/jovyan/work
     environment:
       - SPARK_NO_DAEMONIZE=true
       - SPARK_LOG_DIR=/tmp/spark-logs
@@ -116,6 +117,7 @@ services:
     volumes:
       - ./app/final_data_set:/app/final_data_set
       - ./app/src:/app/src
+      - ./app:/home/jovyan/work
     environment:
       - SPARK_NO_DAEMONIZE=true
       - SPARK_LOG_DIR=/tmp/spark-logs
