@@ -31,7 +31,7 @@ def encode_data(final_df: pd.DataFrame):
         'stock_sector',
         'stock_industry',
         'customer_account_type',
-        'day'
+        'day_name'
     ]
 
     for col in one_hot_cols:
@@ -101,17 +101,17 @@ def encode_data(final_df: pd.DataFrame):
     # =====================================================
     # ✅ FINAL OUTPUT
     # =====================================================
-    save_csv(df, "/app/final_data_set/FULL_STOCKS.csv")
+    save_csv(df, "FINAL_STOCKS.csv")
     with open("encoded_schema.json", "w") as f:
       json.dump(list(df.columns), f)
 
-    # return df, global_lookup
+    return df, global_lookup
 
 
 def transform_stream_batch(stream_df: pd.DataFrame,
-                           lookup_folder: str = "/app/lookup_tables",
-                           final_csv_path: str = "/app/final_data_set/FULL_STOCKS.csv",
-                           schema_path: str = "/app/encoded_schema.json"):
+                           lookup_folder: str = "app/lookup_tables",
+                           final_csv_path: str = "app/clean_data_set/FINAL_STOCKS.csv",
+                           schema_path: str = "app/encoded_schema.json"):
     """
     Transforms a streamed micro-batch using precomputed lookup tables
     and appends it safely to the same FINAL_STOCKS.csv.
@@ -134,7 +134,7 @@ def transform_stream_batch(stream_df: pd.DataFrame,
         'stock_sector': 'lookup_stock_sector.csv',
         'stock_industry': 'lookup_stock_industry.csv',
         'customer_account_type': 'lookup_customer_account_type.csv',
-        'day': 'lookup_day.csv',
+        'day_name': 'lookup_day_name.csv',
         'is_weekend': 'lookup_is_weekend.csv',
         'is_holiday': 'lookup_is_holiday.csv'
     }
@@ -202,4 +202,4 @@ def transform_stream_batch(stream_df: pd.DataFrame,
         index=False
     )
 
-    # return encoded_stream_df
+    return encoded_stream_df
