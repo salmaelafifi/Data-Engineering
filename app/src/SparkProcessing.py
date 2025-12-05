@@ -86,5 +86,5 @@ def spark_anaylsis():
 
     spark.stop()
 
-# if __name__ == "__main__":
-#     main()
+if __name__ == "__main__":
+    spark_anaylsis()

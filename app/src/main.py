@@ -70,4 +70,4 @@ remaining_95= extract_data("/app/streaming_data/remaining_95.csv")
 encode_data(remaining_95)
 
 consumer_stream()
-spark_anaylsis()
+
