@@ -39,3 +39,13 @@ with DAG(
             task_id="detect_outliers",
             python_callable=detect_and_handle_outliers,
         )
+
+        t3 = PythonOperator(
+            task_id="integrate_datasets",
+            python_callable=integrate_data,
+        )
+
+        t4= PythonOperator(
+            task_id="load_to_postgres",
+            python_callable=save_to_db,
+        )
