@@ -1,0 +1,41 @@
+from airflow import DAG
+from airflow.operators.python import PythonOperator
+from airflow.operators.bash import BashOperator
+from airflow.utils.task_group import TaskGroup
+from datetime import datetime, timedelta
+
+default_args = {
+    "owner": "data_engineering_team",
+    "depends_on_past": False,
+    "start_date": datetime.now() - timedelta(days=1),
+    "email_on_retry": False,
+    "retries": 1,
+}
+
+from app.src.DataPipline import *
+from app.src.DataIntegration import *
+from app.src.Utils import *
+from app.src.DataEncoding import *
+from app.src.PrepareStream import *
+from app.src.KafkaConsumer import * 
+from app.src.KafkaProducer import *
+from app.src.SparkProcessing import *
+
+with DAG(
+    dag_id="stock_portfolio_pipeline_<teamname>",
+    default_args=default_args,
+    description="End-to-end stock portfolio analytics pipeline",
+    schedule_interval="@daily",
+    catchup=False,
+    tags=["data-engineering", "stocks", "analytics"],
+) as dag:
+    with TaskGroup("stage_1_data_cleaning") as stage_1:
+        t1 = PythonOperator(
+            task_id="clean_missing_values",
+            python_callable=impute_missing_data,
+        )
+
+        t2 = PythonOperator(
+            task_id="detect_outliers",
+            python_callable=handle_outliers,
+        )
