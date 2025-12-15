@@ -57,11 +57,20 @@ def save_to_db(cleaned, table_name):
     else:
         print('Failed to connect to Database')
 
-def save_lookup_csv(df: pd.DataFrame, filename: str, directory: str = "/app/lookup_tables") -> str:
+def save_lookup_csv(df: pd.DataFrame, filename: str, directory: str = "app/lookup_tables") -> str:
     os.makedirs(directory, exist_ok=True)
 
     filepath = os.path.join(directory, filename)
     df.to_csv(filepath, index=False)
 
     print(f"Data saved successfully to: {filepath}")
+    return filepath
+
+def save_visualization_csv(df: pd.DataFrame, filename: str, directory: str = "app/streamlit/visualization_data") -> str:
+    os.makedirs(directory, exist_ok=True)
+
+    filepath = os.path.join(directory, filename)
+    df.to_csv(filepath, index=False)
+
+    print(f"Visualization data saved successfully to: {filepath}")
     return filepath
