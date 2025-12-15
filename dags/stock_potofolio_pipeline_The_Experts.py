@@ -49,3 +49,16 @@ with DAG(
             task_id="load_to_postgres",
             python_callable=save_to_db,
         )
+    t1>>t2>>t3>>t4
+
+    with TaskGroup("stage_2_data_encoding") as stage_2:
+        t5 = PythonOperator(
+            task_id="prepare_streaming_data",
+            python_callable=prepare_stream,
+        )
+
+        t6 = PythonOperator(
+            task_id="encode_categorical_data",
+            python_callable=encode_data,
+        )
+    t5 >> t6
