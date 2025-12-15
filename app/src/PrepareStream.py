@@ -1,8 +1,13 @@
 import pandas as pd
+import json
+from datetime import datetime
 
 INPUT_FINAL = "/app/final_data_set/final_dataset.csv"     
 STREAM_CSV = "/app/streaming_data/stream.csv"               
 REMAINING_95_CSV = "/app/streaming_data/remaining_95.csv"   
+
+STREAM_STATS_CSV = "stream_statistics.csv"
+STREAM_STATS_JSON = "stream_statistics.json"
 
 STREAM_FRACTION = 0.05
 RANDOM_SEED = 42
@@ -16,6 +21,29 @@ def prepare_stream():
    
     remaining_df = df.drop(stream_df.index).reset_index(drop=True)
     remaining_df.to_csv(REMAINING_95_CSV, index=False)
+
+    # 3. Compute statistics for stream processing
+    stats = {}
+
+    stats["metadata"] = {
+        "rows": len(stream_df),
+        "columns": list(stream_df.columns),
+        "extraction_time": datetime.utcnow().isoformat()
+    }
+
+    # Numeric statistics
+    numeric_df = stream_df.select_dtypes(include="number")
+    stats["numeric_summary"] = numeric_df.describe().to_dict()
+
+    # Missing values per column
+    stats["missing_values"] = stream_df.isnull().sum().to_dict()
+
+    # 4. Save statistics
+    stats_df = numeric_df.describe()
+    stats_df.to_csv(STREAM_STATS_CSV)
+
+    with open(STREAM_STATS_JSON, "w") as f:
+        json.dump(stats, f, indent=4)
 
 
     print(f"5% stream data saved → {STREAM_CSV} ({len(stream_df)} rows)")
