@@ -20,6 +20,7 @@ from app.src.PrepareStream import *
 from app.src.KafkaConsumer import * 
 from app.src.KafkaProducer import *
 from app.src.SparkProcessing import *
+from app.src.DataVisualisation import *
 
 with DAG(
     dag_id="stock_portfolio_pipeline_<teamname>",
@@ -62,3 +63,43 @@ with DAG(
             python_callable=encode_data,
         )
     t5 >> t6
+
+    with TaskGroup("stage_3_stream_processing") as stage_3:
+        t7 = PythonOperator(
+            task_id="start_kafka_producer",
+            python_callable=kafka_producer,
+        )
+
+        t8 = PythonOperator(
+            task_id="consume_and_process_stream",
+            python_callable=consumer_stream,
+        )
+
+        t9 = PythonOperator(
+            task_id="save_final_to_postgres",
+            python_callable=save_to_db,
+        )
+    t7 >> t8 >> t9
+
+    with TaskGroup("stage_4_spark_processing") as stage_4:
+        t10 = PythonOperator(
+            task_id="initialize_spark_session",
+            python_callable=initialize_spark_session,
+        )
+        t11 = PythonOperator(
+            task_id="run_spark_analytics",
+            python_callable=run_spark_analytics,
+        )
+    t10 >> t11
+
+    with TaskGroup("stage_5_data_visualization") as stage_5:
+        t12 = PythonOperator(
+            task_id="prepare_visualization_data",
+            python_callable=prepare_visualization,
+        )
+        t13 = BashOperator(
+            task_id="start_visualization_service",
+            bash_command="streamlit /app/streamlit/app.py",
+        )
+    t12 >> t13
+    
