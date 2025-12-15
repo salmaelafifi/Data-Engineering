@@ -121,7 +121,6 @@ def prepare_visualization():
         )
     save_visualization_csv(holiday_vs_nonholiday, "holiday_vs_nonholiday.csv")
 
-    # Save prepared data for visualization
 
 
 

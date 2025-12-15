@@ -92,8 +92,7 @@ def encode_data(final_df: pd.DataFrame):
 
             global_lookup[col] = lookup_df
             save_lookup_csv(lookup_df, f'lookup_{col}.csv')
-
-
+    
     # FINAL OUTPUT
     save_csv(df, "FINAL_STOCKS.csv")
     with open("encoded_schema.json", "w") as f:
@@ -177,14 +176,10 @@ def transform_stream_batch(stream_df: pd.DataFrame,
 
     encoded_stream_df = pd.DataFrame(encoded_rows)
 
-    # ============================
-    # 4. ENFORCE FROZEN SCHEMA
-    # ============================
+    # 4. ENFORCE SCHEMA
     encoded_stream_df = encoded_stream_df.reindex(columns=encoded_columns, fill_value=0)
 
-    # ============================
     # 5. APPEND TO SAME FINAL CSV
-    # ============================
     encoded_stream_df.to_csv(
         final_csv_path,
         mode="a",
