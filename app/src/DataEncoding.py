@@ -7,9 +7,7 @@ def encode_data(final_df: pd.DataFrame):
     df = final_df.copy()
     global_lookup = {}
 
-    # =====================================================
     # 1. LABEL ENCODING → stock_ticker (ADD column, keep original)
-    # =====================================================
     if 'stock_ticker' in df.columns:
         le = LabelEncoder()
         df['stock_ticker_encoded'] = le.fit_transform(df['stock_ticker'].astype(str))
@@ -23,9 +21,7 @@ def encode_data(final_df: pd.DataFrame):
         global_lookup['stock_ticker'] = lookup_df
         save_lookup_csv(lookup_df, 'lookup_stock_ticker.csv')
 
-    # =====================================================
     # 2. ONE-HOT (k-1) → ADD COLUMNS, KEEP ORIGINAL
-    # =====================================================
     one_hot_cols = [
         'transaction_type',
         'stock_sector',
@@ -79,9 +75,8 @@ def encode_data(final_df: pd.DataFrame):
         # lookup_df.to_csv(f'lookup_{col}.csv', index=False)
         save_lookup_csv(lookup_df, f'lookup_{col}.csv')
 
-    # =====================================================
+
     # 3. BINARY → ADD encoded columns, KEEP ORIGINAL
-    # =====================================================
     binary_cols = ['is_weekend', 'is_holiday']
 
     for col in binary_cols:
@@ -98,9 +93,8 @@ def encode_data(final_df: pd.DataFrame):
             global_lookup[col] = lookup_df
             save_lookup_csv(lookup_df, f'lookup_{col}.csv')
 
-    # =====================================================
-    # ✅ FINAL OUTPUT
-    # =====================================================
+
+    # FINAL OUTPUT
     save_csv(df, "FINAL_STOCKS.csv")
     with open("encoded_schema.json", "w") as f:
       json.dump(list(df.columns), f)
@@ -117,15 +111,12 @@ def transform_stream_batch(stream_df: pd.DataFrame,
     and appends it safely to the same FINAL_STOCKS.csv.
     """
 
-    # ============================
     # 1. LOAD FROZEN SCHEMA
-    # ============================
     with open(schema_path, "r") as f:
         encoded_columns = json.load(f)
 
-    # ============================
+
     # 2. LOAD LOOKUP TABLES
-    # ============================
     lookup_tables = {}
 
     lookup_files = {
@@ -146,9 +137,8 @@ def transform_stream_batch(stream_df: pd.DataFrame,
 
     encoded_rows = []
 
-    # ============================
+
     # 3. ENCODE EACH STREAM ROW
-    # ============================
     for _, row in stream_df.iterrows():
         encoded_row = row.copy()
 
